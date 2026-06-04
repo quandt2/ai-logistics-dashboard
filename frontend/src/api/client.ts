@@ -1,5 +1,15 @@
 import type { AnalyticsResponse, ChartPoint, Kpis } from '../types/api';
 
+type Filters = {
+  status: string;
+  carrier: string;
+  region: string;
+};
+
+function qs(filters?: Filters) {
+  return filters ? `?${new URLSearchParams(filters).toString()}` : '';
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api';
 
 async function getJson<T>(path: string): Promise<T> {
@@ -19,10 +29,21 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 export const api = {
-  kpis: () => getJson<Kpis>('/kpis'),
-  orderVolume: () => getJson<ChartPoint[]>('/charts/order-volume'),
-  deliveryPerformance: () => getJson<ChartPoint[]>('/charts/delivery-performance'),
-  carrierDelayRate: () => getJson<ChartPoint[]>('/charts/carrier-delay-rate'),
-  ask: (question: string) => postJson<AnalyticsResponse>('/ask', { question }),
-  forecast: (sku: string, months: number) => postJson<AnalyticsResponse>('/forecast', { sku, months })
+  kpis: (filters?: Filters) =>
+    getJson<Kpis>(`/kpis${qs(filters)}`),
+
+  orderVolume: (filters?: Filters) =>
+    getJson<ChartPoint[]>(`/charts/order-volume${qs(filters)}`),
+
+  deliveryPerformance: (filters?: Filters) =>
+    getJson<ChartPoint[]>(`/charts/delivery-performance${qs(filters)}`),
+
+  carrierDelayRate: (filters?: Filters) =>
+    getJson<ChartPoint[]>(`/charts/carrier-delay-rates${qs(filters)}`),
+
+  ask: (question: string) =>
+    postJson<AnalyticsResponse>('/ask', { question }),
+
+  forecast: (sku: string, months: number) =>
+    postJson<AnalyticsResponse>('/forecast', { sku, months })
 };

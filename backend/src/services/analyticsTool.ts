@@ -3,6 +3,22 @@ import { getOrders } from './orderRepository.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+export type OrderFilters = {
+  status?: string;
+  carrier?: string;
+  region?: string;
+};
+
+function applyFilters(orders: Order[], filters: OrderFilters = {}): Order[] {
+  return orders.filter((order) => {
+    if (filters.status && filters.status !== 'all' && order.status !== filters.status) return false;
+    if (filters.carrier && filters.carrier !== 'all' && order.carrier !== filters.carrier) return false;
+    if (filters.region && filters.region !== 'all' && order.region !== filters.region) return false;
+
+    return true;
+  });
+}
+
 function deliveryDays(order: Order): number | null {
   if (!(order.orderDate instanceof Date) || !(order.deliveryDate instanceof Date)) {
     return null;
@@ -36,8 +52,8 @@ function lastMonths(orders: Order[], months: number): Order[] {
   return orders.filter(o => o.orderDate >= start && o.orderDate.getTime() <= maxTime);
 }
 
-export function getKpis() {
-  const orders = getOrders();
+export function getKpis(filters: OrderFilters = {}) {
+  const orders = applyFilters(getOrders(), filters);
   const totalOrders = orders.length;
   const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
   const delayedOrders = orders.filter(o => o.status === 'delayed').length;
@@ -59,14 +75,14 @@ export function getKpis() {
   };
 }
 
-export function getOrderVolumeByMonth(): ChartPoint[] {
+export function getOrderVolumeByMonth(filters: OrderFilters = {}): ChartPoint[] {
   const grouped = new Map<string, number>();
-  for (const order of getOrders()) grouped.set(monthKey(order.orderDate), (grouped.get(monthKey(order.orderDate)) ?? 0) + 1);
+  for (const order of applyFilters(getOrders(), filters)) grouped.set(monthKey(order.orderDate), (grouped.get(monthKey(order.orderDate)) ?? 0) + 1);
   return [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([label, value]) => ({ label, value, orders: value }));
 }
 
-export function getDeliveryPerformance(): ChartPoint[] {
-  const orders = getOrders();
+export function getDeliveryPerformance(filters: OrderFilters = {}): ChartPoint[] {
+  const orders = applyFilters(getOrders(), filters);
   const delivered = orders.filter(o => o.status === 'delivered').length;
   const delayed = orders.filter(o => o.status === 'delayed').length;
   return [
@@ -75,9 +91,9 @@ export function getDeliveryPerformance(): ChartPoint[] {
   ];
 }
 
-export function getCarrierDelayRates(): ChartPoint[] {
+export function getCarrierDelayRates(filters: OrderFilters = {}): ChartPoint[] {
   const carrierStats = new Map<string, { total: number; delayed: number }>();
-  for (const order of getOrders()) {
+  for (const order of applyFilters(getOrders(), filters)) {
     const current = carrierStats.get(order.carrier) ?? { total: 0, delayed: 0 };
     current.total += 1;
     if (order.status === 'delayed') current.delayed += 1;
@@ -134,5 +150,80 @@ export function delayedOrdersLastMonth(): AnalyticsResponse {
     dimensions: ['month'],
     queryPlan: ['Find latest order month in dataset', 'Select the previous full month', 'Filter delayed orders', 'Count matching orders'],
     data: [{ label: monthKey(start), value: filtered.length, delayedOrders: filtered.length }]
+  };
+}
+
+export function dynamicAnalyticsQuery(question: string): AnalyticsResponse {
+  const q = question.toLowerCase();
+  const orders = getOrders();
+
+  let filtered = orders;
+  let metric = 'orders';
+  let dimension: 'carrier' | 'region' | 'warehouse' | 'productCategory' | 'sku' | 'status' | 'month' = 'status';
+  let chartType: 'bar' | 'line' | 'pie' | 'table' = 'bar';
+
+  if (q.includes('delayed')) {
+    filtered = filtered.filter(o => o.status === 'delayed');
+    metric = 'delayed_orders';
+  }
+
+  if (q.includes('delivered')) {
+    filtered = filtered.filter(o => o.status === 'delivered');
+    metric = 'delivered_orders';
+  }
+
+  if (q.includes('carrier')) dimension = 'carrier';
+  else if (q.includes('region')) dimension = 'region';
+  else if (q.includes('warehouse')) dimension = 'warehouse';
+  else if (q.includes('category')) dimension = 'productCategory';
+  else if (q.includes('sku')) dimension = 'sku';
+  else if (q.includes('month')) {
+    dimension = 'month';
+    chartType = 'line';
+  } else if (q.includes('status')) {
+    dimension = 'status';
+    chartType = 'pie';
+  }
+
+  const grouped = new Map<string, number>();
+
+  for (const order of filtered) {
+    const key =
+      dimension === 'month'
+        ? monthKey(order.orderDate)
+        : String(order[dimension] ?? 'Unknown');
+
+    grouped.set(key, (grouped.get(key) ?? 0) + 1);
+  }
+
+  const data = [...grouped.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([label, value]) => ({
+      label,
+      value,
+      orders: value
+    }));
+
+  return {
+    answer: `Found ${filtered.length} matching ${metric.replace('_', ' ')} grouped by ${dimension}.`,
+    chartType,
+    filters: {
+      status: q.includes('delayed')
+        ? 'delayed'
+        : q.includes('delivered')
+          ? 'delivered'
+          : 'all'
+    },
+    metrics: [metric],
+    dimensions: [dimension],
+    queryPlan: [
+      'Interpret natural-language question',
+      'Detect metric and dimension',
+      'Apply status filter if requested',
+      'Group matching records',
+      'Select chart type based on dimension',
+      'Return computed data and visualization'
+    ],
+    data
   };
 }

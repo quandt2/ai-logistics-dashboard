@@ -1,8 +1,15 @@
 import type { AnalyticsResponse } from '../types/order.js';
-import { carrierHighestDelayRate, delayedOrdersByWeekLastMonths, delayedOrdersLastMonth } from './analyticsTool.js';
+import {
+  carrierHighestDelayRate,
+  delayedOrdersByWeekLastMonths,
+  delayedOrdersLastMonth,
+  dynamicAnalyticsQuery
+} from './analyticsTool.js';
 import { forecastDemand } from './forecastingTool.js';
 
-export function answerQuestion(question: string): AnalyticsResponse | ReturnType<typeof forecastDemand> {
+export function answerQuestion(
+  question: string
+): AnalyticsResponse | ReturnType<typeof forecastDemand> {
   const q = question.toLowerCase();
 
   if (q.includes('forecast') || q.includes('predict') || q.includes('demand')) {
@@ -26,13 +33,5 @@ export function answerQuestion(question: string): AnalyticsResponse | ReturnType
     return delayedOrdersLastMonth();
   }
 
-  return {
-    answer: 'Unsupported query. Try: Which carrier has the highest delay rate? / Show delayed orders by week for the last 3 months / Predict demand for SKU BOOK-0115 for the next 4 months.',
-    chartType: 'table',
-    filters: {},
-    metrics: [],
-    dimensions: [],
-    queryPlan: ['Question was parsed', 'No supported intent matched', 'Returned safe fallback instead of allowing AI hallucination'],
-    data: []
-  };
+  return dynamicAnalyticsQuery(question);
 }

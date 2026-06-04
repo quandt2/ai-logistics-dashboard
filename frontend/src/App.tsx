@@ -7,6 +7,12 @@ import type { AnalyticsResponse, ChartPoint, Kpis } from './types/api';
 import './styles.css';
 
 export default function App() {
+
+  const [filters, setFilters] = useState({
+    status: 'all',
+    carrier: 'all',
+    region: 'all'
+  });
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [orderVolume, setOrderVolume] = useState<ChartPoint[]>([]);
   const [performance, setPerformance] = useState<ChartPoint[]>([]);
@@ -16,12 +22,20 @@ export default function App() {
   const [forecast, setForecast] = useState<AnalyticsResponse | null>(null);
 
   useEffect(() => {
-    Promise.all([api.kpis(), api.orderVolume(), api.deliveryPerformance(), api.carrierDelayRate()])
+    Promise.all([
+      api.kpis(filters),
+      api.orderVolume(filters),
+      api.deliveryPerformance(filters),
+      api.carrierDelayRate(filters)
+    ])
       .then(([k, volume, perf, carrier]) => {
-        setKpis(k); setOrderVolume(volume); setPerformance(perf); setCarrierDelay(carrier);
+        setKpis(k);
+        setOrderVolume(volume);
+        setPerformance(perf);
+        setCarrierDelay(carrier);
       })
       .catch(console.error);
-  }, []);
+  }, [filters]);
 
   async function submitQuestion() {
     setAnswer(await api.ask(question));
@@ -42,7 +56,17 @@ export default function App() {
       <section className="card filters-card">
         <div className="filters-header">
           <h2>Filters</h2>
-          <button className="secondary-button">Reset</button>
+          <button
+            className="secondary-button"
+            onClick={() =>
+              setFilters({
+                status: 'all',
+                carrier: 'all',
+                region: 'all'
+              })
+            }>
+            Reset
+          </button>
         </div>
 
         <div className="filters-grid">
@@ -55,40 +79,65 @@ export default function App() {
 
           <label>
             Status
-            <select>
-              <option>All Status</option>
-              <option>Delivered</option>
-              <option>Delayed</option>
-            </select>
+            <select
+              value={filters.status}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  status: e.target.value.toLowerCase()
+                }))
+              }
+            >
+              <option value="all">All Status</option>
+              <option value="delivered">Delivered</option>
+              <option value="delayed">Delayed</option>
+          </select>
           </label>
 
           <label>
             Carrier
-            <select>
-              <option>All Carriers</option>
-              <option>USPS</option>
-              <option>GLS</option>
-              <option>Royal Mail</option>
-              <option>FedEx</option>
-              <option>DHL</option>
-              <option>DPD</option>
+            <select
+              value={filters.carrier}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  carrier: e.target.value
+                }))
+              }
+            >
+              <option value="all">All Carriers</option>
+              <option value="USPS">USPS</option>
+              <option value="GLS">GLS</option>
+              <option value="Royal Mail">Royal Mail</option>
+              <option value="FedEx">FedEx</option>
+              <option value="DHL">DHL</option>
+              <option value="DPD">DPD</option>
             </select>
           </label>
 
           <label>
             Region
-            <select>
-              <option>All Regions</option>
-              <option>North</option>
-              <option>South</option>
-              <option>East</option>
-              <option>West</option>
+            <select
+              value={filters.region}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  region: e.target.value
+                }))
+              }>
+                <option value="all">All Regions</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="East">East</option>
+                <option value="West">West</option>
             </select>
           </label>
         </div>
 
         <p className="active-filter">
-          Active filters: Full dataset, all carriers, all statuses
+          Status={filters.status},
+          Carrier={filters.carrier},
+          Region={filters.region}
         </p>
       </section>
       <section className="grid kpi-grid">
