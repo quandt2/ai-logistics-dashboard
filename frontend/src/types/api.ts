@@ -20,9 +20,30 @@ export interface AnalyticsResponse {
   dimensions: string[];
   queryPlan?: string[];
   data: ChartPoint[];
+
   method?: string;
   explanation?: string;
   recommendation?: string;
   historical?: ChartPoint[];
   forecast?: ChartPoint[];
+
+  structuredInterpretation?: StructuredInterpretation;
+  computationSummary?: ComputationSummary;
+  limitations?: string[];
+}
+
+export interface StructuredInterpretation {
+  intent: string;
+  tool: 'analytics' | 'forecasting';
+  metric?: string;
+  dimension?: string;
+  chartType?: 'bar' | 'line' | 'pie' | 'table';
+  confidence: 'high' | 'medium' | 'low';
+}
+
+export interface ComputationSummary {
+  recordsScanned: number;
+  recordsReturned: number;
+  aggregation: string;
+  sourceOfTruth: string;
 }

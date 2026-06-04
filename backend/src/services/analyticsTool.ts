@@ -166,13 +166,36 @@ export function delayedOrdersByWeekLastMonths(months = 3): AnalyticsResponse {
 export function carrierHighestDelayRate(): AnalyticsResponse {
   const data = getCarrierDelayRates();
   const top = data[0];
+
   return {
     answer: `${top.label} has the highest delay rate at ${top.value}%.`,
     chartType: 'bar',
     filters: {},
     metrics: ['delay_rate'],
     dimensions: ['carrier'],
-    queryPlan: ['Group orders by carrier', 'Calculate delayed_orders / total_orders * 100', 'Sort descending by delay rate'],
+    queryPlan: [
+      'Group orders by carrier',
+      'Calculate delayed_orders / total_orders * 100',
+      'Sort descending by delay rate'
+    ],
+    structuredInterpretation: {
+      intent: 'business_question',
+      tool: 'analytics',
+      metric: 'delay_rate',
+      dimension: 'carrier',
+      chartType: 'bar',
+      confidence: 'high'
+    },
+    computationSummary: {
+      recordsScanned: getOrders().length,
+      recordsReturned: data.length,
+      aggregation: 'Grouped orders by carrier and calculated delay rate',
+      sourceOfTruth: 'Read-only logistics CSV dataset'
+    },
+    limitations: [
+      'Delay rate is based on status=delayed because the dataset does not include promised delivery date.',
+      'Recommendation should be validated with larger operational datasets before business action.'
+    ],
     data
   };
 }
@@ -229,6 +252,8 @@ export function dynamicAnalyticsQuery(question: string): AnalyticsResponse {
       data: []
     };
   }
+
+  
 
   let filtered = orders;
   let metric = 'orders';
@@ -296,6 +321,27 @@ export function dynamicAnalyticsQuery(question: string): AnalyticsResponse {
       'Group matching records',
       'Select chart type based on dimension',
       'Return computed data and visualization'
+    ],
+    structuredInterpretation: {
+      intent: 'dynamic_analytics_query',
+      tool: 'analytics',
+      metric,
+      dimension,
+      chartType,
+      confidence: 'medium'
+    },
+
+    computationSummary: {
+      recordsScanned: orders.length,
+      recordsReturned: data.length,
+      aggregation: `Grouped ${filtered.length} matching records by ${dimension}`,
+      sourceOfTruth: 'Read-only logistics CSV dataset'
+    },
+
+    limitations: [
+      'This answer is computed from the provided dataset only.',
+      'The natural-language parser supports a defined subset of analytics questions.',
+      'No raw AI-generated SQL is executed.'
     ],
     data
   };

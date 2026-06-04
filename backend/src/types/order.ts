@@ -34,4 +34,26 @@ export interface AnalyticsResponse {
   dimensions: string[];
   queryPlan: string[];
   data: ChartPoint[];
+
+  method?: string;
+  explanation?: string;
+  recommendation?: string;
+  
+  structuredInterpretation?: {
+    intent: string;
+    tool: 'analytics' | 'forecasting';
+    metric?: string;
+    dimension?: string;
+    chartType?: string;
+    confidence: 'high' | 'medium' | 'low';
+  };
+
+  computationSummary?: {
+    recordsScanned: number;
+    recordsReturned: number;
+    aggregation: string;
+    sourceOfTruth: string;
+  };
+
+  limitations?: string[];
 }
