@@ -6,9 +6,12 @@ The implementation intentionally favors simple, correct, explainable logic over 
 
 ## Live Demo
 
-Frontend: `<add deployed Vercel URL>`  
-Backend API: `<add deployed Render URL>`
+Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/ 
+Backend API: https://ai-logistics-dashboard.onrender.com
 
+Example API endpoint:
+
+https://ai-logistics-dashboard.onrender.com/api/kpis
 ## Repository
 
 https://github.com/quandt2/ai-logistics-dashboard.git
