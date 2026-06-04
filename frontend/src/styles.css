@@ -136,3 +136,18 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+.query-history {
+  margin-top: 16px;
+}
+
+.query-history h4 {
+  margin-bottom: 8px;
+}
+
+.query-history button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+  background: #f1f5f9;
+  color: #334155;
+}

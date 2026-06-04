@@ -13,6 +13,8 @@ export default function App() {
     carrier: 'all',
     region: 'all'
   });
+
+  const [queryHistory, setQueryHistory] = useState<string[]>([]);
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [orderVolume, setOrderVolume] = useState<ChartPoint[]>([]);
   const [performance, setPerformance] = useState<ChartPoint[]>([]);
@@ -38,7 +40,13 @@ export default function App() {
   }, [filters]);
 
   async function submitQuestion() {
-    setAnswer(await api.ask(question));
+    const result = await api.ask(question);
+    setAnswer(result);
+
+    setQueryHistory((prev) => {
+      const next = [question, ...prev.filter((q) => q !== question)];
+      return next.slice(0, 5);
+    });
   }
 
   async function runForecast() {
@@ -167,6 +175,16 @@ export default function App() {
           <button onClick={() => setQuestion('Show delayed orders by week for the last 3 months')}>Delayed by week</button>
           <button onClick={() => setQuestion('How many orders were delivered late last month?')}>Late last month</button>
         </div>
+        {queryHistory.length > 0 && (
+        <div className="query-history">
+          <h4>Query History</h4>
+          {queryHistory.map((q) => (
+            <button key={q} onClick={() => setQuestion(q)}>
+              {q}
+            </button>
+          ))}
+        </div>
+        )}
         {answer && <ResultPanel result={answer} />}
       </section>
 
