@@ -39,13 +39,65 @@ export default function App() {
         <p className="muted">Dashboard KPIs, natural-language analytics, explainability, and SKU demand forecasting from one read-only dataset.</p>
       </header>
 
+      <section className="card filters-card">
+        <div className="filters-header">
+          <h2>Filters</h2>
+          <button className="secondary-button">Reset</button>
+        </div>
+
+        <div className="filters-grid">
+          <label>
+            Date Range
+            <select>
+              <option>2025-01-01 ~ 2025-12-31</option>
+            </select>
+          </label>
+
+          <label>
+            Status
+            <select>
+              <option>All Status</option>
+              <option>Delivered</option>
+              <option>Delayed</option>
+            </select>
+          </label>
+
+          <label>
+            Carrier
+            <select>
+              <option>All Carriers</option>
+              <option>USPS</option>
+              <option>GLS</option>
+              <option>Royal Mail</option>
+              <option>FedEx</option>
+              <option>DHL</option>
+              <option>DPD</option>
+            </select>
+          </label>
+
+          <label>
+            Region
+            <select>
+              <option>All Regions</option>
+              <option>North</option>
+              <option>South</option>
+              <option>East</option>
+              <option>West</option>
+            </select>
+          </label>
+        </div>
+
+        <p className="active-filter">
+          Active filters: Full dataset, all carriers, all statuses
+        </p>
+      </section>
       <section className="grid kpi-grid">
         {kpis && <>
-          <KpiCard title="Total Orders" value={kpis.totalOrders} />
-          <KpiCard title="Delivered Orders" value={kpis.deliveredOrders} />
-          <KpiCard title="Delayed Orders" value={kpis.delayedOrders} />
-          <KpiCard title="On-Time Rate" value={`${kpis.onTimeDeliveryRate}%`} />
-          <KpiCard title="Avg Delivery Time" value={`${kpis.averageDeliveryTimeDays} days`} />
+          <KpiCard title="Total Orders" value={kpis.totalOrders} tone="blue"/>
+          <KpiCard title="Delivered Orders" value={kpis.deliveredOrders} tone="green"/>
+          <KpiCard title="Delayed Orders" value={kpis.delayedOrders} tone="red"/>
+          <KpiCard title="On-Time Rate" value={`${kpis.onTimeDeliveryRate}%`} tone="purple"/>
+          <KpiCard title="Avg Delivery Time" value={`${kpis.averageDeliveryTimeDays} days`} tone="orange"/>
         </>}
       </section>
 

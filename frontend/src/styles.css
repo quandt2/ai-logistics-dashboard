@@ -23,3 +23,116 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; }
 th { background: #f8fafc; }
 @media (max-width: 900px) { .kpi-grid, .two-col { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  right: -28px;
+  top: -28px;
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  opacity: 0.14;
+}
+
+.kpi-card strong {
+  font-size: 32px;
+}
+
+.kpi-title {
+  font-weight: 700;
+}
+
+.kpi-card.blue {
+  color: #1d4ed8;
+}
+
+.kpi-card.green {
+  color: #15803d;
+}
+
+.kpi-card.red {
+  color: #b91c1c;
+}
+
+.kpi-card.purple {
+  color: #7e22ce;
+}
+
+.kpi-card.orange {
+  color: #c2410c;
+}
+
+.kpi-card.blue::after {
+  background: #2563eb;
+}
+
+.kpi-card.green::after {
+  background: #16a34a;
+}
+
+.kpi-card.red::after {
+  background: #dc2626;
+}
+
+.kpi-card.purple::after {
+  background: #9333ea;
+}
+
+.kpi-card.orange::after {
+  background: #ea580c;
+}
+
+.filters-card {
+  margin-bottom: 18px;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.filters-grid label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  color: #334155;
+}
+
+select {
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+}
+
+.secondary-button {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.active-filter {
+  margin-bottom: 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+}

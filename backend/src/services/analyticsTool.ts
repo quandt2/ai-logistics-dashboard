@@ -3,8 +3,19 @@ import { getOrders } from './orderRepository.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-function deliveryDays(order: Order): number {
-  return Math.max(0, Math.round((order.deliveryDate.getTime() - order.orderDate.getTime()) / MS_PER_DAY));
+function deliveryDays(order: Order): number | null {
+  if (!(order.orderDate instanceof Date) || !(order.deliveryDate instanceof Date)) {
+    return null;
+  }
+
+  const orderTime = order.orderDate.getTime();
+  const deliveryTime = order.deliveryDate.getTime();
+
+  if (!Number.isFinite(orderTime) || !Number.isFinite(deliveryTime)) {
+    return null;
+  }
+
+  return Math.max(0, Math.round((deliveryTime - orderTime) / MS_PER_DAY));
 }
 
 function monthKey(date: Date): string {
@@ -30,7 +41,14 @@ export function getKpis() {
   const totalOrders = orders.length;
   const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
   const delayedOrders = orders.filter(o => o.status === 'delayed').length;
-  const avgDeliveryDays = orders.reduce((sum, order) => sum + deliveryDays(order), 0) / totalOrders;
+  const deliveryDurations = orders
+  .map((order) => deliveryDays(order))
+  .filter((days): days is number => days !== null);
+
+  const avgDeliveryDays =
+    deliveryDurations.length > 0
+      ? deliveryDurations.reduce((sum, days) => sum + days, 0) / deliveryDurations.length
+      : 0;
 
   return {
     totalOrders,
