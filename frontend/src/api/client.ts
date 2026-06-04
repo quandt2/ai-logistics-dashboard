@@ -4,6 +4,13 @@ type Filters = {
   status: string;
   carrier: string;
   region: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+type DateRange = {
+  minDate: string;
+  maxDate: string;
 };
 
 function qs(filters?: Filters) {
@@ -45,5 +52,8 @@ export const api = {
     postJson<AnalyticsResponse>('/ask', { question }),
 
   forecast: (sku: string, months: number) =>
-    postJson<AnalyticsResponse>('/forecast', { sku, months })
+    postJson<AnalyticsResponse>('/forecast', { sku, months }),
+
+  dateRange: () =>
+    getJson<DateRange>('/date-range'),
 };

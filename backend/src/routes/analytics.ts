@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { getCarrierDelayRates, getDeliveryPerformance, getKpis, getOrderVolumeByMonth } from '../services/analyticsTool.js';
+import { getCarrierDelayRates, getDeliveryPerformance, getKpis, getOrderVolumeByMonth, getDatasetDateRange } from '../services/analyticsTool.js';
 import type { OrderFilters } from '../services/analyticsTool.js';
 
 function filtersFromQuery(query: any): OrderFilters {
   return {
     status: typeof query.status === 'string' ? query.status : 'all',
     carrier: typeof query.carrier === 'string' ? query.carrier : 'all',
-    region: typeof query.region === 'string' ? query.region : 'all'
+    region: typeof query.region === 'string' ? query.region : 'all',
+    startDate: typeof query.startDate === 'string' ? query.startDate : undefined,
+    endDate: typeof query.endDate === 'string' ? query.endDate : undefined
   };
 }
 
@@ -26,4 +28,8 @@ analyticsRouter.get('/charts/delivery-performance', (req, res) => {
 
 analyticsRouter.get('/charts/carrier-delay-rates', (req, res) => {
   res.json(getCarrierDelayRates(filtersFromQuery(req.query)));
+});
+
+analyticsRouter.get('/date-range', (_req, res) => {
+  res.json(getDatasetDateRange());
 });

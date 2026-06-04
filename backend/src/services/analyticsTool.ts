@@ -7,16 +7,57 @@ export type OrderFilters = {
   status?: string;
   carrier?: string;
   region?: string;
+  startDate?: string;
+  endDate?: string;
 };
 
 function applyFilters(orders: Order[], filters: OrderFilters = {}): Order[] {
   return orders.filter((order) => {
-    if (filters.status && filters.status !== 'all' && order.status !== filters.status) return false;
-    if (filters.carrier && filters.carrier !== 'all' && order.carrier !== filters.carrier) return false;
-    if (filters.region && filters.region !== 'all' && order.region !== filters.region) return false;
+    if (filters.status && filters.status !== 'all' && order.status !== filters.status) {
+      return false;
+    }
+
+    if (filters.carrier && filters.carrier !== 'all' && order.carrier !== filters.carrier) {
+      return false;
+    }
+
+    if (filters.region && filters.region !== 'all' && order.region !== filters.region) {
+      return false;
+    }
+
+    if (filters.startDate) {
+      const start = new Date(filters.startDate);
+      if (order.orderDate < start) return false;
+    }
+
+    if (filters.endDate) {
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      if (order.orderDate > end) return false;
+    }
 
     return true;
   });
+}
+
+function formatDateInput(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export function getDatasetDateRange() {
+  const orders = getOrders();
+
+  const timestamps = orders
+    .map((order) => order.orderDate.getTime())
+    .filter(Number.isFinite);
+
+  const min = new Date(Math.min(...timestamps));
+  const max = new Date(Math.max(...timestamps));
+
+  return {
+    minDate: formatDateInput(min),
+    maxDate: formatDateInput(max)
+  };
 }
 
 function deliveryDays(order: Order): number | null {

@@ -11,7 +11,9 @@ export default function App() {
   const [filters, setFilters] = useState({
     status: 'all',
     carrier: 'all',
-    region: 'all'
+    region: 'all',
+    startDate: '',
+    endDate: ''
   });
 
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
@@ -23,7 +25,28 @@ export default function App() {
   const [answer, setAnswer] = useState<AnalyticsResponse | null>(null);
   const [forecast, setForecast] = useState<AnalyticsResponse | null>(null);
 
+  const [availableDateRange, setAvailableDateRange] = useState<{
+    minDate: string;
+    maxDate: string;
+  } | null>(null);
+
   useEffect(() => {
+    api.dateRange()
+      .then((range) => {
+        setAvailableDateRange(range);
+
+        setFilters((prev) => ({
+          ...prev,
+          startDate: range.minDate,
+          endDate: range.maxDate
+        }));
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (!filters.startDate || !filters.endDate) return;
+
     Promise.all([
       api.kpis(filters),
       api.orderVolume(filters),
@@ -70,7 +93,9 @@ export default function App() {
               setFilters({
                 status: 'all',
                 carrier: 'all',
-                region: 'all'
+                region: 'all',
+                startDate: availableDateRange?.minDate ?? '',
+                endDate: availableDateRange?.maxDate ?? ''
               })
             }>
             Reset
@@ -79,10 +104,35 @@ export default function App() {
 
         <div className="filters-grid">
           <label>
-            Date Range
-            <select>
-              <option>2025-01-01 ~ 2025-12-31</option>
-            </select>
+            Start Date
+            <input
+              type="date"
+              value={filters.startDate}
+              min={availableDateRange?.minDate}
+              max={filters.endDate || availableDateRange?.maxDate}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  startDate: e.target.value
+                }))
+              }
+            />
+          </label>
+
+          <label>
+            End Date
+            <input
+              type="date"
+              value={filters.endDate}
+              min={filters.startDate || availableDateRange?.minDate}
+              max={availableDateRange?.maxDate}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  endDate: e.target.value
+                }))
+              }
+            />
           </label>
 
           <label>
