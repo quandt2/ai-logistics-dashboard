@@ -6,7 +6,7 @@ The implementation intentionally favors simple, correct, explainable logic over 
 
 ## Live Demo
 
-Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/ 
+Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/
 Backend API: https://ai-logistics-dashboard.onrender.com
 
 Example API endpoint:
@@ -293,6 +293,7 @@ Tradeoff:
 - No authentication is included.
 - Query history is stored only in frontend state.
 - Date-range filters are available for dashboard KPIs and charts; natural-language examples use dataset-relative time windows.
+- Relative date queries currently support a defined subset, such as "last month" and "last 3 months" for weekly delayed-order analysis. General phrases like "last 2 months" are not fully supported yet.
 
 ## Future Improvements
 
@@ -305,6 +306,7 @@ Tradeoff:
 - Add authentication and role-based access control.
 - Add Docker setup.
 - Add a more complete automated test suite.
+- Add broader relative date parsing, such as "last 2 months", "last quarter", and custom time windows.
 
 ## Deployment Notes
 
