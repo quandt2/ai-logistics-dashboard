@@ -193,6 +193,7 @@ export default function App() {
         </div>
 
         <p className="active-filter">
+          Date={filters.startDate || 'N/A'} to {filters.endDate || 'N/A'},
           Status={filters.status},
           Carrier={filters.carrier},
           Region={filters.region}
@@ -263,6 +264,45 @@ function ResultPanel({ result }: { result: AnalyticsResponse }) {
       <p><strong>Metrics:</strong> {(result.metrics ?? []).join(', ') || 'N/A'}</p>
       <p><strong>Dimensions:</strong> {(result.dimensions ?? []).join(', ') || 'N/A'}</p>
       {result.queryPlan && <ol>{result.queryPlan.map((step, i) => <li key={i}>{step}</li>)}</ol>}
+      {result.structuredInterpretation && (
+        <>
+          <h4>Structured Interpretation</h4>
+          <pre className="json-block">
+            {JSON.stringify(result.structuredInterpretation, null, 2)}
+          </pre>
+        </>
+      )}
+
+      {result.computationSummary && (
+        <>
+          <h4>Computation Summary</h4>
+          <ul>
+            <li>
+              <strong>Records scanned:</strong> {result.computationSummary.recordsScanned}
+            </li>
+            <li>
+              <strong>Records returned:</strong> {result.computationSummary.recordsReturned}
+            </li>
+            <li>
+              <strong>Aggregation:</strong> {result.computationSummary.aggregation}
+            </li>
+            <li>
+              <strong>Source of truth:</strong> {result.computationSummary.sourceOfTruth}
+            </li>
+          </ul>
+        </>
+      )}
+
+      {result.limitations && result.limitations.length > 0 && (
+        <>
+          <h4>Limitations</h4>
+          <ul>
+            {result.limitations.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </>
+      )}
       <h4>Underlying Data</h4>
       <DataTable data={result.data ?? []} />
     </div>
