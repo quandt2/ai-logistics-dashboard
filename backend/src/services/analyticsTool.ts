@@ -197,6 +197,38 @@ export function delayedOrdersLastMonth(): AnalyticsResponse {
 export function dynamicAnalyticsQuery(question: string): AnalyticsResponse {
   const q = question.toLowerCase();
   const orders = getOrders();
+  const knownTerms = [
+    'orders',
+    'delayed',
+    'delivered',
+    'carrier',
+    'region',
+    'warehouse',
+    'status',
+    'sku',
+    'category',
+    'month',
+    'revenue'
+  ];
+
+  const isAmbiguous = !knownTerms.some((term) => q.includes(term));
+
+  if (isAmbiguous) {
+    return {
+      answer:
+        'I need a clearer analytics question. Try asking about orders, delays, carriers, regions, warehouses, revenue, status, SKU, or product category.',
+      chartType: 'table',
+      filters: {},
+      metrics: [],
+      dimensions: [],
+      queryPlan: [
+        'Interpret natural-language question',
+        'No supported metric or dimension was detected',
+        'Return a clarification instead of generating an unsupported answer'
+      ],
+      data: []
+    };
+  }
 
   let filtered = orders;
   let metric = 'orders';
