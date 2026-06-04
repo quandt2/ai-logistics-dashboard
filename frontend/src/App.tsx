@@ -225,6 +225,9 @@ export default function App() {
           <button onClick={() => setQuestion('Which carrier has the highest delay rate?')}>Highest delay carrier</button>
           <button onClick={() => setQuestion('Show delayed orders by week for the last 3 months')}>Delayed by week</button>
           <button onClick={() => setQuestion('How many orders were delivered late last month?')}>Late last month</button>
+          <button onClick={() => setQuestion('Which warehouse processes the most orders?')}>Warehouse most orders</button>
+          <button onClick={() => setQuestion('Which region generates the most revenue?')}>Region most revenue</button>
+          <button onClick={() => setQuestion('Which carrier should we avoid?')}>Avoid carrier</button>
         </div>
         {queryHistory.length > 0 && (
         <div className="query-history">
