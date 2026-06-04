@@ -63,11 +63,26 @@ export function forecastDemand(sku: string, months = 4) {
 
   const monthly = new Map<string, number>();
 
+  // Find boundaries of true timeline for this specific SKU
+  const historicalTimestamps = rows.map(o => o.orderDate.getTime());
+  const minDate = new Date(Math.min(...historicalTimestamps));
+  const maxDate = new Date(Math.max(...historicalTimestamps));
+
+  // Initialize continuous chronological span with zeros
+  const current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+
+  while (current <= end) {
+    monthly.set(monthKey(current), 0);
+    current.setMonth(current.getMonth() + 1);
+  }
+
+  // Accumulate transactional quantities over the complete, padded baseline map
   for (const order of rows) {
     const key = monthKey(order.orderDate);
     monthly.set(key, (monthly.get(key) ?? 0) + order.quantity);
   }
-
+  
   const historical: ChartPoint[] = [...monthly.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([label, value]) => ({
