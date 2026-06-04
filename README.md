@@ -310,30 +310,37 @@ Tradeoff:
 
 ## Deployment Notes
 
-Recommended deployment:
+The application is deployed as two services:
 
-- **Frontend:** Vercel
-- **Backend:** Render
+Frontend: Vercel
+Backend: Render
+
+Production URLs:
+
+Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/
+Backend API: https://ai-logistics-dashboard.onrender.com
+
+Example backend endpoint:
+
+https://ai-logistics-dashboard.onrender.com/api/kpis
 
 Vercel settings:
 
-```text
 Root Directory: frontend
 Build Command: npm run build
 Output Directory: dist
 Environment Variable:
-VITE_API_BASE_URL=https://your-render-service.onrender.com/api
-```
+VITE_API_BASE_URL=https://ai-logistics-dashboard.onrender.com/api
 
 Render settings:
 
-```text
 Root Directory: backend
 Build Command: npm install && npm run build
 Start Command: npm start
-Environment Variable:
-CORS_ORIGIN=https://your-vercel-app.vercel.app
-```
+
+If CORS is restricted in production, set:
+
+CORS_ORIGIN=https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app
 
 ## Submission Checklist
 
