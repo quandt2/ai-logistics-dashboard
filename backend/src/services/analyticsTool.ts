@@ -70,7 +70,7 @@ export function getKpis(filters: OrderFilters = {}) {
     totalOrders,
     deliveredOrders,
     delayedOrders,
-    onTimeDeliveryRate: Number(((deliveredOrders / totalOrders) * 100).toFixed(2)),
+    onTimeDeliveryRate: totalOrders > 0 ? Number(((deliveredOrders / totalOrders) * 100).toFixed(2)) : 0,
     averageDeliveryTimeDays: Number(avgDeliveryDays.toFixed(2))
   };
 }

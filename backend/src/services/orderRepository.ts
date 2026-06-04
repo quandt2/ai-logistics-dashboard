@@ -14,9 +14,12 @@ export function getOrders(): Order[] {
 
   const csvPath = path.join(__dirname, '..', 'data', 'mock_logistics_data.csv');
   const raw = fs.readFileSync(csvPath, 'utf-8');
-  const records = parse(raw, { columns: true, skip_empty_lines: true });
+  const records = parse(raw, {
+    columns: true,
+    skip_empty_lines: true
+  }) as Record<string, string>[];
 
-  cache = records.map((row: Record<string, string>) => ({
+  const orders: Order[] = records.map((row) => ({
     clientId: row.client_id,
     orderId: row.order_id,
     orderDate: new Date(row.order_date),
@@ -36,5 +39,6 @@ export function getOrders(): Order[] {
     warehouse: row.warehouse
   }));
 
-  return cache;
+  cache = orders;
+  return orders;
 }
