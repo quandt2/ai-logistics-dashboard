@@ -7,6 +7,7 @@ The implementation intentionally favors simple, correct, explainable logic over 
 ## Live Demo
 
 Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/
+
 Backend API: https://ai-logistics-dashboard.onrender.com
 
 Example API endpoint:
@@ -318,6 +319,7 @@ Backend: Render
 Production URLs:
 
 Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/
+
 Backend API: https://ai-logistics-dashboard.onrender.com
 
 Example backend endpoint:
