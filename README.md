@@ -74,6 +74,53 @@ For deployment, set `VITE_API_BASE_URL` to the deployed backend `/api` URL, for 
 VITE_API_BASE_URL=https://your-render-service.onrender.com/api
 ```
 
+## Application Flow
+
+User
+  |
+  v
+React Frontend
+  |
+  +--> Dashboard Load
+  |       |
+  |       v
+  |   Express API
+  |       |
+  |       v
+  |   Analytics Tool
+  |       |
+  |       v
+  |   Read-only CSV Dataset
+  |       |
+  |       v
+  |   KPI + Chart Data
+  |
+  +--> Natural Language Question
+          |
+          v
+      AI Orchestrator
+          |
+          +--> Analytics Tool
+          |       |
+          |       v
+          |   Computed Business Answer
+          |
+          +--> Forecasting Tool
+          |       |
+          |       v
+          |   Demand Forecast + Recommendation
+          |
+          +--> Safe Fallback for Unsupported Queries
+          |
+          v
+      Explainability
+          |
+          v
+      Filters + Metrics + Dimensions + Query Plan + Data Table
+          |
+          v
+      Frontend Dynamic Visualization
+
 ## System Overview
 
 ```text
