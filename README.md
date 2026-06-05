@@ -76,50 +76,38 @@ VITE_API_BASE_URL=https://your-render-service.onrender.com/api
 
 ## Application Flow
 
-User
-  |
-  v
-React Frontend
-  |
-  +--> Dashboard Load
-  |       |
-  |       v
-  |   Express API
-  |       |
-  |       v
-  |   Analytics Tool
-  |       |
-  |       v
-  |   Read-only CSV Dataset
-  |       |
-  |       v
-  |   KPI + Chart Data
-  |
-  +--> Natural Language Question
-          |
-          v
-      AI Orchestrator
-          |
-          +--> Analytics Tool
-          |       |
-          |       v
-          |   Computed Business Answer
-          |
-          +--> Forecasting Tool
-          |       |
-          |       v
-          |   Demand Forecast + Recommendation
-          |
-          +--> Safe Fallback for Unsupported Queries
-          |
-          v
-      Explainability
-          |
-          v
-      Filters + Metrics + Dimensions + Query Plan + Data Table
-          |
-          v
-      Frontend Dynamic Visualization
+```mermaid
+flowchart TD
+    A[User] --> B[React Frontend]
+
+    B --> C{User Action}
+
+    C -->|Dashboard Load| D[Express API]
+    D --> E[Analytics Tool]
+    E --> F[Read-only CSV Dataset]
+    F --> G[KPI + Chart Data]
+    G --> B
+
+    C -->|Natural Language Question| H[AI Orchestrator]
+    H --> I{Intent Detection}
+
+    I -->|Analytics| J[Analytics Tool]
+    I -->|Forecasting| K[Forecasting Tool]
+    I -->|Unsupported| L[Safe Clarification Response]
+
+    J --> F
+    K --> F
+
+    J --> M[Computed Business Answer]
+    K --> N[Demand Forecast + Recommendation]
+
+    M --> O[Explainability]
+    N --> O
+    L --> O
+
+    O --> P[Filters + Metrics + Dimensions + Query Plan + Data Table]
+    P --> Q[Frontend Dynamic Visualization]
+```
 
 ## System Overview
 
