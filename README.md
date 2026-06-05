@@ -6,6 +6,8 @@ The implementation intentionally favors simple, correct, explainable logic over 
 
 ## Live Demo
 
+> Note: The backend runs on Render's free tier and may take up to about 50 seconds to wake up after being idle. If the dashboard is slow on first load, please wait and refresh.
+
 Frontend: https://ai-logistics-dashboard-frontend-7o1zqgexp-quandt2s-projects.vercel.app/
 
 Backend API: https://ai-logistics-dashboard.onrender.com
